@@ -40,8 +40,9 @@ function App() {
         }
         setTasks([newTask,...tasks])
     }
-
-
+    const changeTaskStatus = (taskID: string, isDone: boolean) => {
+        setTasks(tasks.map(t =>t.id === taskID ? {...t, isDone} : t));
+    }
 
     //UI (User Interface)
     let tasksForRender = tasks;
@@ -58,11 +59,13 @@ function App() {
     return (
         <div className="App">
             <TodoList
+                filter={filter}
                 title={'What to learn'}
                 tasks={tasksForRender}
                 removeTask={removeTask}
                 changeFilter={changeFilter}
                 addTask={addTask}
+                changeTaskStatus={changeTaskStatus}
             />
             {/*            <TodoList title={"What to buy"}/>
             <TodoList title={"What to read"}/>*/}

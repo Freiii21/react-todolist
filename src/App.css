@@ -16,3 +16,16 @@
 .todoList{
   background-color: lightgray;
 }
+
+.active-filter{
+  background-color: aquamarine;
+}
+
+.is-Done {
+  opacity: 0.4;
+}
+
+.error {
+  border: 2px solid red;
+  outline: none;
+}
