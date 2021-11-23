@@ -1,31 +1,27 @@
-.App {
-  padding: 30px;
-  display: flex;
-}
+/*.App {*/
+/*  padding: 30px;*/
+/*  display: flex;*/
+/*}*/
 
-.App > div {
-  margin-right: 50px;
-}
+/*.App > div {*/
+/*  margin-right: 50px;*/
+/*}*/
 
-.todoList {
+/*.todoList {
   border: 1px solid darkslategrey;
   border-radius: 5px;
   padding: 20px;
-}
+}*/
 
-.todoList{
+/*.todoList{
   background-color: lightgray;
-}
-
-.active-filter{
-  background-color: aquamarine;
-}
+}*/
 
 .is-Done {
   opacity: 0.4;
 }
 
-.error {
-  border: 2px solid red;
-  outline: none;
-}
+/*.error {*/
+/*  border: 2px solid red;*/
+/*  outline: none;*/
+/*}*/
