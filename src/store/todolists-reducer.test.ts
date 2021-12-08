@@ -1,7 +1,6 @@
 import {v1} from 'uuid';
 import {FilterValuesType, TodolistType} from '../App';
 import {
-    ActionType,
     AddTodoListAC,
     ChangeTodoListAC,
     ChangeTodoListFilterAC,
@@ -28,7 +27,6 @@ test('correct todolist should be added', () => {
     let todolistId1 = v1();
     let todolistId2 = v1();
 
-    let newTodoListId = v1();
     let newTodolistTitle = "New Todolist";
 
     const startState: Array<TodolistType> = [
@@ -36,7 +34,7 @@ test('correct todolist should be added', () => {
         {id: todolistId2, title: "What to buy", filter: "all"}
     ]
 
-    const endState = todolistsReducer(startState, AddTodoListAC(newTodoListId, newTodolistTitle))
+    const endState = todolistsReducer(startState, AddTodoListAC(newTodolistTitle))
 
     expect(endState.length).toBe(3);
     expect(endState[2].title).toBe(newTodolistTitle);
