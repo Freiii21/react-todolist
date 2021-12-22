@@ -1,9 +1,10 @@
-import React, {useState, ChangeEvent, KeyboardEvent} from 'react';
+import React, {useState, ChangeEvent, KeyboardEvent, useCallback} from 'react';
 import {FilterValuesType, TaskType} from './App';
 import {AddItemForm} from './AddItemForm';
 import {EditableSpan} from './EditableSpan';
 import {Button, ButtonGroup, Checkbox, IconButton, List, ListItem, Typography} from '@material-ui/core';
 import {Delete} from '@material-ui/icons';
+import {Task} from './Task';
 
 type TodoListPropsType = {
     id: string
@@ -19,46 +20,32 @@ type TodoListPropsType = {
     changeTodolistTitle: (title: string, todolistID: string) => void
 }
 
-const TodoList = (props: TodoListPropsType) => {
-    const tasksJSXElements = props.tasks.map(task => {
-        const removeTask = () => props.removeTask(task.id, props.id);
-        const changeStatus = (e: ChangeEvent<HTMLInputElement>) => {
-            props.changeTaskStatus(task.id, e.currentTarget.checked, props.id)
-        }
-        const changeTitle = (title: string) => {
-            props.changeTaskTitle(task.id, title, props.id)
-        }
+const TodoList = React.memo((props: TodoListPropsType) => {
+    let tasksForRender: Array<TaskType> = props.tasks;
+    if (props.filter === 'active') {
+        tasksForRender = tasksForRender.filter(t => t.isDone === false)
+    }
+    if (props.filter === 'completed') {
+        tasksForRender = tasksForRender.filter(t => t.isDone === true)
+    }
+
+    const tasksJSXElements = tasksForRender.map(task => {
         return (
-            <ListItem
-                disableGutters
-                className={task.isDone ? 'is-Done' : ''}
-                divider
-                key={task.id}
-                style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    padding: "0px"
-                }}
-            >
-                <Checkbox
-                    color={"primary"}
-                    onChange={changeStatus}
-                    checked={task.isDone}
-                />
-                <EditableSpan title={task.title} setNewTitle={changeTitle}/>
-                <IconButton onClick={removeTask}>
-                    <Delete fontSize={'small'}/>
-                </IconButton>
-            </ListItem>
+           <Task key={task.id}
+                 task={task}
+                 removeTask={props.removeTask}
+                 changeStatus={props.changeTaskStatus}
+                 changeTitle={props.changeTaskTitle}/>
         )
     })
-    const addTask = (title: string) => {
+    const addTask = useCallback((title: string) => {
         props.addTask(title, props.id)
-    };
+    }, [props.addTask, props.id]);
 
-    const filterAll = () => props.changeFilter('all', props.id)
-    const filterActive = () => props.changeFilter('active', props.id)
-    const filterComplete = () => props.changeFilter('completed', props.id)
+    const filterAll = useCallback(() => props.changeFilter('all', props.id), [props.id])
+    const filterActive = useCallback(() => props.changeFilter('active', props.id), [props.id])
+    const filterComplete = useCallback(() => props.changeFilter('completed', props.id), [props.id])
+
     const changeTodoListTitle = (title: string) => {
         props.changeTodolistTitle(title, props.id)
     }
@@ -96,6 +83,6 @@ const TodoList = (props: TodoListPropsType) => {
             </div>
         </div>
     );
-}
+})
 
 export default TodoList;
