@@ -21,6 +21,12 @@ export const todolistApi = {
     updateTodolist(params: {todolistId: string, title: string}){
         return instance.put<ResponseType>(`todo-lists/${params.todolistId}`, {title: params.title})
     },
+    getTasks(todolistId: string){
+        return instance.get<Array<TaskType>>(`todo-lists/${todolistId}/tasks`)
+    },
+    createTask(params: {title: string, todolistId: string}){
+        return instance.post<ResponseType<{item: TaskType}>>(`todo-lists/${params.todolistId}/tasks`, {title: params.title})
+    },
 }
 
 type TodoType = {
@@ -35,4 +41,24 @@ type ResponseType<T = {}> = {
     messages: Array<string>
     resultCode: number
     data: T
+}
+
+type TaskType = {
+    description: string
+    title: string
+    completed: boolean
+    status: number
+    priority: number
+    startDate: string
+    deadline: string
+    id: string
+    todoListId: string
+    order: number
+    addedDate: string
+}
+
+type ResponseTaskType<T = {}> = {
+    error: string
+    totalCount: number
+    items: T
 }
