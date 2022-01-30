@@ -1,50 +1,41 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import './App.css';
 import TodoList from './TodoList';
 import {v1} from 'uuid';
 import {AddItemForm} from './AddItemForm';
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from '@material-ui/core';
 import {Menu} from '@material-ui/icons';
+import {useDispatch} from 'react-redux';
+import {TaskPriorities, TaskStatuses, TaskType, todolistApi} from './api/todolist-api';
+import {FilterValuesType, setTodosAC, TodolistDomainType} from './state/todolists-reducer';
 
-export type TaskType = {
-    id: string
-    title: string
-    isDone: boolean
-}
-
-export type TodolistType = {
-    id: string
-    title: string
-    filter: FilterValuesType
-}
 
 export type TasksStateType = {
     [key: string]: Array<TaskType>
 }
 
-export type FilterValuesType = 'all' | 'active' | 'completed';
 
 function App() {
     //BLL:
     const todolistID_1 = v1();
     const todolistID_2 = v1();
 
-    const [todolists, setTodolists] = useState<Array<TodolistType>>([
-        {id: todolistID_1, title: 'What to learn', filter: 'all'},
-        {id: todolistID_2, title: 'What to buy', filter: 'all'},
+    const [todolists, setTodolists] = useState<Array<TodolistDomainType>>([
+        {id: todolistID_1, title: 'What to learn', filter: 'all', addedDate: '', order: 0},
+        {id: todolistID_2, title: 'What to buy', filter: 'all', addedDate: '', order: 0},
     ])
     const [tasks, setTasks] = useState<TasksStateType>({
         [todolistID_1]: [
-            {id: v1(), title: 'HTML', isDone: true},
-            {id: v1(), title: 'CSS', isDone: true},
-            {id: v1(), title: 'React', isDone: false},
-            {id: v1(), title: 'Redux', isDone: false},
+            {id: v1(), title: 'HTML', status: TaskStatuses.Completed, todoListId: todolistID_1, startDate: '',
+            deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: true},
+            {id: v1(), title: 'CSS', status: TaskStatuses.Completed, todoListId: todolistID_1, startDate: '',
+                deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: true},
         ],
         [todolistID_2]: [
-            {id: v1(), title: 'Meat', isDone: true},
-            {id: v1(), title: 'Beer', isDone: true},
-            {id: v1(), title: 'Milk', isDone: false},
-            {id: v1(), title: 'Bread', isDone: false},
+            {id: v1(), title: 'Meat', status: TaskStatuses.Completed, todoListId: todolistID_2, startDate: '',
+                deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: true},
+            {id: v1(), title: 'Beer', status: TaskStatuses.Completed, todoListId: todolistID_2, startDate: '',
+                deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: true},
         ],
     })
 
@@ -55,18 +46,18 @@ function App() {
     const addTask = (title: string, todolistID: string) => {
         const newTask: TaskType = {
             id: v1(),
-            title: title, //the same as title,
-            isDone: false,
+            title: title, status: TaskStatuses.New, todoListId: todolistID, startDate: '',
+            deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: false
         }
         setTasks({
             ...tasks,
             [todolistID]: [newTask, ...tasks[todolistID]]
         })
     }
-    const changeTaskStatus = (taskID: string, isDone: boolean, todolistID: string) => {
+    const changeTaskStatus = (taskID: string, status: TaskStatuses, todolistID: string) => {
         setTasks({
             ...tasks,
-            [todolistID]: tasks[todolistID].map(t => t.id === taskID ? {...t, isDone: isDone} : t)
+            [todolistID]: tasks[todolistID].map(t => t.id === taskID ? {...t, status: status} : t)
         });
     }
     const changeTaskTitle = (taskID: string, title: string, todolistID: string) => {
@@ -88,10 +79,12 @@ function App() {
     }
     const addTodolist = (title: string) => {
         const todolistID = v1()
-        const newTodolist: TodolistType = {
+        const newTodolist: TodolistDomainType = {
             id: todolistID,
             title,
             filter: 'all',
+            addedDate: '',
+            order: 0
         }
         setTodolists([...todolists, newTodolist])
         setTasks({...tasks, [todolistID]: []})
@@ -101,10 +94,10 @@ function App() {
     const todolistsComponents = todolists.map(tl => {
         let tasksForRender: Array<TaskType> = tasks[tl.id];
         if (tl.filter === 'active') {
-            tasksForRender = tasks[tl.id].filter(t => t.isDone === false)
+            tasksForRender = tasks[tl.id].filter(t => t.status === TaskStatuses.New)
         }
         if (tl.filter === 'completed') {
-            tasksForRender = tasks[tl.id].filter(t => t.isDone === true)
+            tasksForRender = tasks[tl.id].filter(t => t.status === TaskStatuses.Completed)
         }
 
         return (

@@ -1,10 +1,11 @@
-import React, {useState, ChangeEvent, KeyboardEvent, useCallback} from 'react';
-import {FilterValuesType, TaskType} from './App';
+import React, {useCallback} from 'react';
 import {AddItemForm} from './AddItemForm';
 import {EditableSpan} from './EditableSpan';
-import {Button, ButtonGroup, Checkbox, IconButton, List, ListItem, Typography} from '@material-ui/core';
+import {Button, ButtonGroup, IconButton, List, Typography} from '@material-ui/core';
 import {Delete} from '@material-ui/icons';
 import {Task} from './Task';
+import {FilterValuesType} from './state/todolists-reducer';
+import {TaskStatuses, TaskType} from './api/todolist-api';
 
 type TodoListPropsType = {
     id: string
@@ -14,7 +15,7 @@ type TodoListPropsType = {
     removeTask: (taskID: string, todolistID: string) => void
     changeFilter: (filter: FilterValuesType, todolistID: string) => void
     addTask: (title: string, todolistID: string) => void
-    changeTaskStatus: (taskID: string, isDone: boolean, todolistID: string) => void
+    changeTaskStatus: (taskID: string, status: TaskStatuses, todolistID: string) => void
     removeTodolist: (todolistID: string) => void
     changeTaskTitle: (taskID: string, title: string, todolistID: string) => void
     changeTodolistTitle: (title: string, todolistID: string) => void
@@ -23,10 +24,10 @@ type TodoListPropsType = {
 const TodoList = React.memo((props: TodoListPropsType) => {
     let tasksForRender: Array<TaskType> = props.tasks;
     if (props.filter === 'active') {
-        tasksForRender = tasksForRender.filter(t => t.isDone === false)
+        tasksForRender = tasksForRender.filter(t => t.status === TaskStatuses.New)
     }
     if (props.filter === 'completed') {
-        tasksForRender = tasksForRender.filter(t => t.isDone === true)
+        tasksForRender = tasksForRender.filter(t => t.status === TaskStatuses.Completed)
     }
 
     const tasksJSXElements = tasksForRender.map(task => {

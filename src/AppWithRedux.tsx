@@ -1,4 +1,4 @@
-import React, {useCallback, useReducer, useState} from 'react';
+import React, {useCallback, useEffect, useReducer, useState} from 'react';
 import './App.css';
 import TodoList from './TodoList';
 import {v1} from 'uuid';
@@ -8,31 +8,30 @@ import {Menu} from '@material-ui/icons';
 import {
     AddTodoListAC,
     ChangeTodoListAC,
-    ChangeTodoListFilterAC,
-    RemoveTodoListAC,
+    ChangeTodoListFilterAC, FilterValuesType,
+    RemoveTodoListAC, setTodosAC, TodolistDomainType,
     todolistsReducer
 } from './state/todolists-reducer';
 import {addTaskAC, changeTaskStatusAC, changeTaskTitleAC, removeTaskAC, tasksReducer} from './state/tasks-reducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from './state/store';
+import {TaskPriorities, TaskStatuses, TaskType, todolistApi} from './api/todolist-api';
 
-export type TaskType = {
-    id: string
-    title: string
-    isDone: boolean
-}
-export type TodolistType = {
-    id: string
-    title: string
-    filter: FilterValuesType
-}
+
 export type TasksStateType = {
     [key: string]: Array<TaskType>
 }
-export type FilterValuesType = 'all' | 'active' | 'completed';
 
 function AppWithRedux() {
-    const todolists = useSelector<AppRootStateType, Array<TodolistType>>(state => state.todolists)
+    useEffect(() => {
+        let pr = todolistApi.getTodolists()
+        pr.then((res)=>{
+            let todos = res.data;
+            setTodosAC(todos)
+        })
+    }, [])
+
+    const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
     const dispatch = useDispatch();
 
@@ -44,13 +43,14 @@ function AppWithRedux() {
         const newTask: TaskType = {
             id: v1(),
             title: title,
-            isDone: false,
+            status: TaskStatuses.New, todoListId: todolistID, startDate: '',
+            deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: false
         }
         let action = addTaskAC(title,todolistID)
         dispatch(action)
     },[dispatch])
-    const changeTaskStatus = useCallback((taskID: string, isDone: boolean, todolistID: string) => {
-        let action = changeTaskStatusAC(taskID,isDone,todolistID);
+    const changeTaskStatus = useCallback((taskID: string, status: TaskStatuses, todolistID: string) => {
+        let action = changeTaskStatusAC(taskID,status,todolistID);
         dispatch(action);
     },[dispatch])
     const changeTaskTitle = useCallback((taskID: string, title: string, todolistID: string) => {
