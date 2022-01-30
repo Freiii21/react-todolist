@@ -27,7 +27,7 @@ function AppWithRedux() {
         let pr = todolistApi.getTodolists()
         pr.then((res)=>{
             let todos = res.data;
-            setTodosAC(todos)
+            dispatch(setTodosAC(todos));
         })
     }, [])
 

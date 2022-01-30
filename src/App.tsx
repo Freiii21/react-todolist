@@ -16,6 +16,10 @@ export type TasksStateType = {
 
 
 function App() {
+    //////////////////////////////
+    // AppWithRedux is using!!! //
+    //////////////////////////////
+
     //BLL:
     const todolistID_1 = v1();
     const todolistID_2 = v1();

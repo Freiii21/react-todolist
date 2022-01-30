@@ -32,7 +32,7 @@ TaskIsDoneStory.args = {
 export const TaskIsNotDoneStory = Template.bind({});
 // More on args: https://storybook.js.org/docs/react/writing-stories/args
 TaskIsNotDoneStory.args = {
-    task: {id: '2', title: 'HTML',status: TaskStatuses.Completed, todoListId: '12345', startDate: '',
+    task: {id: '2', title: 'HTML',status: TaskStatuses.New, todoListId: '12345', startDate: '',
     deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: true},
     todolistId: '12345'
 };
