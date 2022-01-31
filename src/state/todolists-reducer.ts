@@ -1,28 +1,8 @@
+import { Dispatch } from 'redux';
 import {v1} from 'uuid';
-import {TodolistType} from '../api/todolist-api';
-export type RemoveTodoListAT = {
-    type: 'REMOVE-TODOLIST'
-    id: string
-}
-export type AddTodoListAT = {
-    type: 'ADD-TODOLIST'
-    todolistId: string
-    title: string
-}
-export type SetTodosAT = {
-    type: 'SET_TODOS'
-    todolists: Array<TodolistType>
-}
-type ChangeTodoListAT = {
-    type: 'CHANGE-TODOLIST-TITLE'
-    id: string
-    title: string
-}
-type ChangeTodoListFilter = {
-    type: 'CHANGE-TODOLIST-FILTER'
-    id: string
-    filter: FilterValuesType
-}
+import {todolistApi, TodolistType} from '../api/todolist-api';
+import {AppRootStateType} from './store';
+
 export type FilterValuesType = 'all' | 'active' | 'completed';
 export type TodolistDomainType = TodolistType & {
     filter: FilterValuesType
@@ -55,7 +35,30 @@ export const todolistsReducer = (state:Array<TodolistDomainType> = initialState,
     }
 }
 
-//AC - action creator
+export type RemoveTodoListAT = {
+    type: 'REMOVE-TODOLIST'
+    id: string
+}
+export type AddTodoListAT = {
+    type: 'ADD-TODOLIST'
+    todolistId: string
+    title: string
+}
+type ChangeTodoListAT = {
+    type: 'CHANGE-TODOLIST-TITLE'
+    id: string
+    title: string
+}
+type ChangeTodoListFilter = {
+    type: 'CHANGE-TODOLIST-FILTER'
+    id: string
+    filter: FilterValuesType
+}
+export type SetTodosAT = {
+    type: 'SET_TODOS'
+    todolists: Array<TodolistType>
+}
+
 export const RemoveTodoListAC = (id: string):RemoveTodoListAT => {
     return {type: 'REMOVE-TODOLIST', id: id}
 };
@@ -73,4 +76,16 @@ export const setTodosAC = (todolists: Array<TodolistType>):SetTodosAT => {
         type: "SET_TODOS",
         todolists
     }
+}
+
+//THUNK
+export const setTodosThunk = (dispatch: Dispatch, getState: ()=> AppRootStateType): void => {
+    // 1. side effect
+    todolistApi.getTodolists()
+        .then((res)=>{
+            let todos = res.data;
+            // 2. dispatch action (thunk)
+            dispatch(setTodosAC(todos));
+    })
+
 }

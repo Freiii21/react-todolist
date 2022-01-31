@@ -3,29 +3,6 @@ import { v1 } from 'uuid';
 import {AddTodoListAT, RemoveTodoListAT, SetTodosAT} from './todolists-reducer';
 import {TaskPriorities, TaskStatuses} from '../api/todolist-api';
 
-type RemoveTaskAT = {
-    type: 'REMOVE-TASK'
-    taskId: string
-    todolistId: string
-}
-type AddTaskAT = {
-    type: 'ADD-TASK'
-    title: string
-    todolistId: string
-}
-type ChangeTaskStatusAT = {
-    type: 'CHANGE-TASK-STATUS'
-    taskId: string
-    status: TaskStatuses
-    todolistId: string
-}
-type ChangeTaskTitleAT = {
-    type: 'CHANGE-TASK-TITLE'
-    taskId: string
-    title: string
-    todolistId: string
-}
-
 const initialState: TasksStateType = {};
 
 export type ActionType = RemoveTaskAT | AddTaskAT | ChangeTaskStatusAT | ChangeTaskTitleAT | AddTodoListAT
@@ -58,6 +35,29 @@ export const tasksReducer = (state:TasksStateType = initialState, action: Action
         default:
             return state;
     }
+}
+
+type RemoveTaskAT = {
+    type: 'REMOVE-TASK'
+    taskId: string
+    todolistId: string
+}
+type AddTaskAT = {
+    type: 'ADD-TASK'
+    title: string
+    todolistId: string
+}
+type ChangeTaskStatusAT = {
+    type: 'CHANGE-TASK-STATUS'
+    taskId: string
+    status: TaskStatuses
+    todolistId: string
+}
+type ChangeTaskTitleAT = {
+    type: 'CHANGE-TASK-TITLE'
+    taskId: string
+    title: string
+    todolistId: string
 }
 
 export const removeTaskAC = (taskId: string, todolistId: string):RemoveTaskAT => {

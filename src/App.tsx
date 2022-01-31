@@ -16,8 +16,9 @@ export type TasksStateType = {
 
 
 function App() {
+
     //////////////////////////////
-    // AppWithRedux is using!!! //
+    // AppWithRedux is used!!! ///
     //////////////////////////////
 
     //BLL:
