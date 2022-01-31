@@ -54,7 +54,7 @@ function AppWithReducer() {
             status: TaskStatuses.New, todoListId: todolistID, startDate: '',
             deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: false
         }
-        let action = addTaskAC(title,todolistID)
+        let action = addTaskAC(newTask)
         dispatchToTasks(action)
     }
     const changeTaskStatus = (taskID: string, status: TaskStatuses, todolistID: string) => {

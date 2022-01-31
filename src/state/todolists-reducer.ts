@@ -79,7 +79,7 @@ export const setTodosAC = (todolists: Array<TodolistType>):SetTodosAT => {
 }
 
 //THUNK
-export const setTodosThunk = (dispatch: Dispatch, getState: ()=> AppRootStateType): void => {
+export const setTodosThunk = () => (dispatch: Dispatch, getState: ()=> AppRootStateType): void => {
     // 1. side effect
     todolistApi.getTodolists()
         .then((res)=>{

@@ -1,11 +1,13 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {AddItemForm} from './AddItemForm';
 import {EditableSpan} from './EditableSpan';
 import {Button, ButtonGroup, IconButton, List, Typography} from '@material-ui/core';
 import {Delete} from '@material-ui/icons';
 import {Task} from './Task';
-import {FilterValuesType} from './state/todolists-reducer';
+import {FilterValuesType, setTodosThunk} from './state/todolists-reducer';
 import {TaskStatuses, TaskType} from './api/todolist-api';
+import {setTasksThunk} from './state/tasks-reducer';
+import {useDispatch} from 'react-redux';
 
 type TodoListPropsType = {
     id: string
@@ -22,6 +24,13 @@ type TodoListPropsType = {
 }
 
 const TodoList = React.memo((props: TodoListPropsType) => {
+    useEffect(() => {
+        dispatch(setTasksThunk(props.id))
+    }, [])
+
+    const dispatch = useDispatch();
+
+
     let tasksForRender: Array<TaskType> = props.tasks;
     if (props.filter === 'active') {
         tasksForRender = tasksForRender.filter(t => t.status === TaskStatuses.New)
