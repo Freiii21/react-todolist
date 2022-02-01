@@ -1,8 +1,9 @@
 import {TasksStateType} from '../App';
 import { v1 } from 'uuid';
 import {AddTodoListAT, RemoveTodoListAT, SetTodosAT} from './todolists-reducer';
-import {TaskPriorities, TaskStatuses, TaskType, todolistApi} from '../api/todolist-api';
+import {TaskPriorities, TaskStatuses, TaskType, todolistApi, UpdateTaskModelType} from '../api/todolist-api';
 import {Dispatch} from 'redux';
+import {AppRootStateType} from './store';
 
 const initialState: TasksStateType = {};
 
@@ -120,5 +121,26 @@ export const addTaskThunk = (title: string, todoId: string) => {
                     dispatch(addTaskAC(task))
                 }
             })
+    }
+}
+export const updateTaskStatusThunk = (todoId: string, taskId: string, status: TaskStatuses) => {
+    return (dispatch: Dispatch, getState: () => AppRootStateType) => {
+        const task = getState().tasks[todoId].find(t => t.id === taskId)
+        if(task){
+            const model: UpdateTaskModelType = {
+                title: task.title,
+                status: status,
+                deadline: task.deadline,
+                description: task.description,
+                priority: task.priority,
+                startDate: task.startDate
+            }
+            todolistApi.updateTask(todoId, taskId, model)
+                .then(res => {
+                    if(res.data.resultCode === 0){
+                        dispatch(changeTaskStatusAC(taskId, status, todoId))
+                    }
+                })
+        }
     }
 }
