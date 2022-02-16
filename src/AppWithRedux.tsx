@@ -9,20 +9,22 @@ import {
     AddTodoListAC,
     ChangeTodoListAC,
     ChangeTodoListFilterAC, FilterValuesType,
-    RemoveTodoListAC, setTodosAC, setTodosThunk, TodolistDomainType,
-    todolistsReducer
+    RemoveTodoListAC, setTodosAC, fetchTodoslistsTC, TodolistDomainType,
+    todolistsReducer, addTodolistTC
 } from './state/todolists-reducer';
 import {
     addTaskAC, addTaskThunk,
     changeTaskStatusAC,
     changeTaskTitleAC,
     removeTaskAC,
-    removeTaskThunk,
+    removeTaskTC,
     tasksReducer, updateTaskStatusThunk
 } from './state/tasks-reducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from './state/store';
 import {TaskPriorities, TaskStatuses, TaskType, todolistApi} from './api/todolist-api';
+import LinearProgress from '@mui/material/LinearProgress';
+import {RequestStatusType} from './app/app-reducer';
 
 
 export type TasksStateType = {
@@ -31,15 +33,16 @@ export type TasksStateType = {
 
 function AppWithRedux() {
     useEffect(() => {
-        dispatch(setTodosThunk())
+        dispatch(fetchTodoslistsTC())
     }, [])
 
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
+    const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
     const dispatch = useDispatch();
 
     const removeTask = useCallback((taskID: string, todolistID: string) => {
-        let action = removeTaskThunk(taskID,todolistID)
+        let action = removeTaskTC(taskID,todolistID)
         dispatch(action)
     },[dispatch])
     const addTask = useCallback((title: string, todolistID: string) => {
@@ -71,13 +74,11 @@ function AppWithRedux() {
         dispatch(action);
     },[dispatch])
     const addTodolist = useCallback((title: string) => {
-        let action = AddTodoListAC(title);
+        let action = addTodolistTC(title);
         dispatch(action);
     },[dispatch])
 
     const todolistsComponents = todolists.map(tl => {
-
-
         return (
             <Grid item key={tl.id}>
                 <Paper elevation={8} style={{padding: '20px'}}>
@@ -113,6 +114,9 @@ function AppWithRedux() {
                         <Button color="inherit" variant={'outlined'}>Login</Button>
                     </Toolbar>
                 </AppBar>
+
+                {status === "loading" && <LinearProgress color="secondary" />}
+
                 <Container fixed>
                     <Grid container style={{padding: '29px 0px'}}>
                         <AddItemForm addItem={addTodolist}/>

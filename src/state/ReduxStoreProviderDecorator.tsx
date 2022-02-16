@@ -5,6 +5,7 @@ import {combineReducers, createStore} from 'redux';
 import {tasksReducer} from './tasks-reducer';
 import {todolistsReducer} from './todolists-reducer';
 import {TaskPriorities, TaskStatuses} from '../api/todolist-api';
+import {RequestStatusType} from '../app/app-reducer';
 
 const rootReducer = combineReducers({
     tasks: tasksReducer,
@@ -29,6 +30,9 @@ const initialGlobalState: AppRootStateType = {
             {id: '4', title: "React Book", status: TaskStatuses.New, todoListId: "todolistId2", startDate: '',
                 deadline: '', addedDate: '', order: 0, priority: TaskPriorities.Low, description: '', completed: false}
         ]
+    },
+    app: {
+        status: 'loading' as RequestStatusType
     }
 };
 

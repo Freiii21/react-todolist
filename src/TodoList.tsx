@@ -4,9 +4,9 @@ import {EditableSpan} from './EditableSpan';
 import {Button, ButtonGroup, IconButton, List, Typography} from '@material-ui/core';
 import {Delete} from '@material-ui/icons';
 import {Task} from './Task';
-import {FilterValuesType, setTodosThunk} from './state/todolists-reducer';
+import {FilterValuesType, fetchTodoslistsTC} from './state/todolists-reducer';
 import {TaskStatuses, TaskType} from './api/todolist-api';
-import {setTasksThunk} from './state/tasks-reducer';
+import {fetchTasksTC} from './state/tasks-reducer';
 import {useDispatch} from 'react-redux';
 
 type TodoListPropsType = {
@@ -25,7 +25,7 @@ type TodoListPropsType = {
 
 const TodoList = React.memo((props: TodoListPropsType) => {
     useEffect(() => {
-        dispatch(setTasksThunk(props.id))
+        dispatch(fetchTasksTC(props.id))
     }, [])
 
     const dispatch = useDispatch();
