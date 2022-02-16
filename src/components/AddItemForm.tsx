@@ -42,6 +42,7 @@ export const AddItemForm = React.memo((props:AddItemFormPropsType) => {
                 label={"Title"}
                 error={error}
                 helperText={error && "title is required!"}
+                disabled={true}
             />
 {/*            <input
                 style={error ? errorInputStyle : undefined}
