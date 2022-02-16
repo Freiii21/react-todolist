@@ -1,30 +1,25 @@
-import React, {useCallback, useEffect, useReducer, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import './App.css';
-import TodoList from './TodoList';
-import {v1} from 'uuid';
-import {AddItemForm} from './AddItemForm';
+import TodoList from '../TodoList';
+import {AddItemForm} from '../components/AddItemForm';
 import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography} from '@material-ui/core';
 import {Menu} from '@material-ui/icons';
 import {
-    AddTodoListAC,
+    addTodolistTC,
     ChangeTodoListAC,
-    ChangeTodoListFilterAC, FilterValuesType,
-    RemoveTodoListAC, setTodosAC, fetchTodoslistsTC, TodolistDomainType,
-    todolistsReducer, addTodolistTC
-} from './state/todolists-reducer';
-import {
-    addTaskAC, addTaskThunk,
-    changeTaskStatusAC,
-    changeTaskTitleAC,
-    removeTaskAC,
-    removeTaskTC,
-    tasksReducer, updateTaskStatusThunk
-} from './state/tasks-reducer';
+    ChangeTodoListFilterAC,
+    fetchTodoslistsTC,
+    FilterValuesType,
+    RemoveTodoListAC,
+    TodolistDomainType
+} from '../state/todolists-reducer';
+import {addTaskThunk, changeTaskTitleAC, removeTaskTC, updateTaskStatusThunk} from '../state/tasks-reducer';
 import {useDispatch, useSelector} from 'react-redux';
-import {AppRootStateType} from './state/store';
-import {TaskPriorities, TaskStatuses, TaskType, todolistApi} from './api/todolist-api';
+import {AppRootStateType} from '../state/store';
+import {TaskStatuses, TaskType} from '../api/todolist-api';
 import LinearProgress from '@mui/material/LinearProgress';
-import {RequestStatusType} from './app/app-reducer';
+import {RequestStatusType} from './app-reducer';
+import {ErrorSnackbar} from '../components/ErrorSnackbar';
 
 
 export type TasksStateType = {
@@ -125,6 +120,8 @@ function AppWithRedux() {
                         {todolistsComponents}
                     </Grid>
                 </Container>
+
+                <ErrorSnackbar />
             </div>
         </div>
     );
