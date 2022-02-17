@@ -4,26 +4,38 @@ import {Dispatch} from 'redux';
 import {AppRootStateType} from './store';
 import {setAppErrorAC, SetAppErrorAT, setAppStatusAC, SetAppStatusAT} from '../app/app-reducer';
 import {TasksStateType} from '../app/AppWithRedux';
+import {AxiosError} from 'axios';
 
 const initialState: TasksStateType = {};
 
 export type ActionType = RemoveTaskAT | AddTaskAT | ChangeTaskStatusAT | ChangeTaskTitleAT | AddTodoListAT
     | RemoveTodoListAT | SetTodosAT | SetTasksAT | SetAppStatusAT | SetAppErrorAT;
 
-export const tasksReducer = (state:TasksStateType = initialState, action: ActionType):TasksStateType => {
+export const tasksReducer = (state: TasksStateType = initialState, action: ActionType): TasksStateType => {
     switch (action.type) {
         case 'REMOVE-TASK':
             return {...state, [action.todolistId]: state[action.todolistId].filter(task => task.id != action.taskId)};
         case 'ADD-TASK':
             return {
                 ...state,
-                [action.task.todoListId]: [action.task, ...state[action.task.todoListId]]};
+                [action.task.todoListId]: [action.task, ...state[action.task.todoListId]]
+            };
         case 'CHANGE-TASK-STATUS':
-            return {...state, [action.todolistId]: state[action.todolistId].map(t => t.id === action.taskId ? {...t, status:action.status} : t)}
+            return {...state,
+                [action.todolistId]: state[action.todolistId].map(t => t.id === action.taskId ? {
+                    ...t,
+                    status: action.status
+                } : t)
+            }
         case 'CHANGE-TASK-TITLE':
-            return {...state, [action.todolistId]: state[action.todolistId].map(t => t.id === action.taskId ? {...t, title:action.title} : t)}
+            return {...state,
+                [action.todolistId]: state[action.todolistId].map(t => t.id === action.taskId ? {
+                    ...t,
+                    title: action.title
+                } : t)
+            }
         case 'ADD-TODOLIST':
-            return {...state, [action.todolist.id]:[]}
+            return {...state, [action.todolist.id]: []}
         case 'REMOVE-TODOLIST':
             let newState = {...state};
             delete newState[action.id];
@@ -71,16 +83,16 @@ type SetTasksAT = {
     todoId: string
 }
 
-export const removeTaskAC = (taskId: string, todolistId: string):RemoveTaskAT => {
+export const removeTaskAC = (taskId: string, todolistId: string): RemoveTaskAT => {
     return {type: 'REMOVE-TASK', taskId, todolistId}
 };
-export const addTaskAC = (task: TaskType):AddTaskAT => {
+export const addTaskAC = (task: TaskType): AddTaskAT => {
     return {type: 'ADD-TASK', task}
 };
-export const changeTaskStatusAC = (taskId: string, status: TaskStatuses, todolistId: string):ChangeTaskStatusAT => {
+export const changeTaskStatusAC = (taskId: string, status: TaskStatuses, todolistId: string): ChangeTaskStatusAT => {
     return {type: 'CHANGE-TASK-STATUS', taskId, status, todolistId}
 };
-export const changeTaskTitleAC = (taskId: string, title: string, todolistId: string):ChangeTaskTitleAT => {
+export const changeTaskTitleAC = (taskId: string, title: string, todolistId: string): ChangeTaskTitleAT => {
     return {type: 'CHANGE-TASK-TITLE', taskId, title, todolistId}
 };
 export const setTasksAC = (tasks: TaskType[], todoId: string): SetTasksAT => {
@@ -110,7 +122,7 @@ export const removeTaskTC = (taskId: string, todoId: string) => {
         todolistApi.deleteTask(todoId, taskId)
             .then(res => {
                 dispatch(setAppStatusAC('succeeded'))
-                if(res.data.resultCode === 0){
+                if (res.data.resultCode === 0) {
                     dispatch(removeTaskAC(taskId, todoId))
                 }
             })
@@ -119,27 +131,35 @@ export const removeTaskTC = (taskId: string, todoId: string) => {
 export const addTaskTC = (title: string, todoId: string) => {
     return (dispatch: Dispatch) => {
         dispatch(setAppStatusAC('loading'))
-        todolistApi.createTask({title:title,todolistId:todoId})
+        todolistApi.createTask({title: title, todolistId: todoId})
             .then(res => {
-                if(res.data.resultCode === 0){
+                if (res.data.resultCode === 0) {
                     dispatch(setAppStatusAC('succeeded'))
                     const task = res.data.data.item
                     dispatch(addTaskAC(task))
                 } else {
                     dispatch(setAppStatusAC('failed'))
-                    if (res.data.messages.length){
+                    if (res.data.messages.length) {
                         dispatch(setAppErrorAC(res.data.messages[0]))
                     } else {
-                        dispatch(setAppErrorAC("Some error occurred"))
+                        dispatch(setAppErrorAC('Some error occurred'))
                     }
                 }
+            })
+            .catch((err: AxiosError) => {
+                dispatch(setAppErrorAC(err.message))
+                dispatch(setAppStatusAC('failed'))
+                }
+            )
+            .finally(()=>{
+                
             })
     }
 }
 export const updateTaskStatusThunk = (todoId: string, taskId: string, status: TaskStatuses) => {
     return (dispatch: Dispatch, getState: () => AppRootStateType) => {
         const task = getState().tasks[todoId].find(t => t.id === taskId)
-        if(task){
+        if (task) {
             const model: UpdateTaskModelType = {
                 title: task.title,
                 status: status,
@@ -150,7 +170,7 @@ export const updateTaskStatusThunk = (todoId: string, taskId: string, status: Ta
             }
             todolistApi.updateTask(todoId, taskId, model)
                 .then(res => {
-                    if(res.data.resultCode === 0){
+                    if (res.data.resultCode === 0) {
                         dispatch(changeTaskStatusAC(taskId, status, todoId))
                     }
                 })

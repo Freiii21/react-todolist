@@ -71,7 +71,7 @@ const TodoList = React.memo((props: TodoListPropsType) => {
                     <Delete/>
                 </IconButton>
             </Typography>
-            <AddItemForm addItem={addTask}/>
+            <AddItemForm addItem={addTask} entityStatus={props.entityStatus}/>
             <List>
                 {tasksJSXElements}
             </List>
