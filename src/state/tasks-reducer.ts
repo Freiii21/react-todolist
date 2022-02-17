@@ -5,6 +5,7 @@ import {AppRootStateType} from './store';
 import {setAppErrorAC, SetAppErrorAT, setAppStatusAC, SetAppStatusAT} from '../app/app-reducer';
 import {TasksStateType} from '../app/AppWithRedux';
 import {AxiosError} from 'axios';
+import {handleserverAppError, handleServerNetworkError} from '../utils/error-utils';
 
 const initialState: TasksStateType = {};
 
@@ -128,6 +129,14 @@ export const removeTaskTC = (taskId: string, todoId: string) => {
             })
     }
 }
+
+// enum ResponseStatusCodes {
+//     success = 0,
+//     error = 1,
+//     capcha = 10
+// }
+
+
 export const addTaskTC = (title: string, todoId: string) => {
     return (dispatch: Dispatch) => {
         dispatch(setAppStatusAC('loading'))
@@ -135,25 +144,15 @@ export const addTaskTC = (title: string, todoId: string) => {
             .then(res => {
                 if (res.data.resultCode === 0) {
                     dispatch(setAppStatusAC('succeeded'))
-                    const task = res.data.data.item
-                    dispatch(addTaskAC(task))
+                    dispatch(addTaskAC(res.data.data.item))
                 } else {
-                    dispatch(setAppStatusAC('failed'))
-                    if (res.data.messages.length) {
-                        dispatch(setAppErrorAC(res.data.messages[0]))
-                    } else {
-                        dispatch(setAppErrorAC('Some error occurred'))
-                    }
+                    handleserverAppError<{item: TaskType}>(dispatch, res.data)
                 }
             })
             .catch((err: AxiosError) => {
-                dispatch(setAppErrorAC(err.message))
-                dispatch(setAppStatusAC('failed'))
+                handleServerNetworkError(dispatch, err.message)
                 }
             )
-            .finally(()=>{
-                
-            })
     }
 }
 export const updateTaskStatusThunk = (todoId: string, taskId: string, status: TaskStatuses) => {

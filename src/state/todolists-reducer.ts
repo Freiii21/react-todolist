@@ -4,6 +4,8 @@ import {todolistApi, TodolistType} from '../api/todolist-api';
 import {AppRootStateType} from './store';
 import {RequestStatusType, setAppErrorAC, SetAppErrorAT, setAppStatusAC, SetAppStatusAT} from '../app/app-reducer';
 import {addTaskAC} from './tasks-reducer';
+import {AxiosError} from 'axios';
+import {handleserverAppError, handleServerNetworkError} from '../utils/error-utils';
 
 export type FilterValuesType = 'all' | 'active' | 'completed';
 export type TodolistDomainType = TodolistType & {
@@ -109,14 +111,15 @@ export const addTodolistTC = (title: string) => {
                     dispatch(setAppStatusAC('succeeded'))
                     dispatch(addTodoListAC(res.data.data.item));
                 } else {
-                    dispatch(setAppStatusAC('failed'))
-                    if (res.data.messages.length) {
-                        dispatch(setAppErrorAC(res.data.messages[0]))
-                    } else {
-                        dispatch(setAppErrorAC('Some error occurred'))
-                    }
+                    handleserverAppError<{item: TodolistType}>(dispatch, res.data)
                 }
             })
+            .catch((err: AxiosError) => {
+                handleServerNetworkError(dispatch, err.message)
+                    // dispatch(setAppErrorAC(err.message))
+                    // dispatch(setAppStatusAC('failed'))
+                }
+            )
     }
 }
 export const removeTodolistTC = (todolistId: string) => {
