@@ -20,6 +20,8 @@ import {TaskStatuses, TaskType} from '../api/todolist-api';
 import LinearProgress from '@mui/material/LinearProgress';
 import {RequestStatusType} from './app-reducer';
 import {ErrorSnackbar} from '../components/ErrorSnackbar';
+import {Login} from '../features/Login/Login';
+import {Navigate, Route, Routes} from 'react-router-dom';
 
 
 export type TasksStateType = {
@@ -37,37 +39,37 @@ function AppWithRedux() {
     const dispatch = useDispatch();
 
     const removeTask = useCallback((taskID: string, todolistID: string) => {
-        let action = removeTaskTC(taskID,todolistID)
+        let action = removeTaskTC(taskID, todolistID)
         dispatch(action)
-    },[dispatch])
+    }, [dispatch])
     const addTask = useCallback((title: string, todolistID: string) => {
         dispatch(addTaskTC(title, todolistID))
-    },[dispatch])
+    }, [dispatch])
     const changeTaskStatus = useCallback((taskID: string, status: TaskStatuses, todolistID: string) => {
         //let action = changeTaskStatusAC(taskID,status,todolistID);
         dispatch(updateTaskStatusThunk(todolistID, taskID, status));
-    },[dispatch])
+    }, [dispatch])
     const changeTaskTitle = useCallback((taskID: string, title: string, todolistID: string) => {
-        let action = changeTaskTitleAC(taskID,title,todolistID);
+        let action = changeTaskTitleAC(taskID, title, todolistID);
         dispatch(action);
-    },[dispatch])
+    }, [dispatch])
 
     const changeFilter = useCallback((filter: FilterValuesType, todolistID: string) => {
-        let action = changeTodoListFilterAC(todolistID,filter);
+        let action = changeTodoListFilterAC(todolistID, filter);
         dispatch(action);
-    },[dispatch])
+    }, [dispatch])
     const changeTodolistTitle = useCallback((title: string, todolistID: string) => {
-        let action = changeTodoListAC(todolistID,title);
+        let action = changeTodoListAC(todolistID, title);
         dispatch(action);
-    },[dispatch])
+    }, [dispatch])
     const removeTodolist = useCallback((todolistID: string) => {
         let action = removeTodolistTC(todolistID);
         dispatch(action);
-    },[dispatch])
+    }, [dispatch])
     const addTodolist = useCallback((title: string) => {
         let action = addTodolistTC(title);
         dispatch(action);
-    },[dispatch])
+    }, [dispatch])
 
     const todolistsComponents = todolists.map(tl => {
         return (
@@ -107,21 +109,41 @@ function AppWithRedux() {
                     </Toolbar>
                 </AppBar>
 
-                {status === "loading" && <LinearProgress color="secondary" />}
+                {status === 'loading' && <LinearProgress color="secondary"/>}
 
                 <Container fixed>
-                    <Grid container style={{padding: '29px 0px'}}>
-                        <AddItemForm addItem={addTodolist}/>
-                    </Grid>
-                    <Grid container spacing={4}>
-                        {todolistsComponents}
-                    </Grid>
+                    <Routes>
+                        <Route path="/" element={<TodolistsBlock addTodolist={addTodolist}
+                                                            todolistsComponents={todolistsComponents}/>}
+                        />
+                        <Route path="login" element={<Login/>}/>
+                        <Route path="404" element={<h1 style={{textAlign: 'center'}}>404 page not found</h1>}/>
+                        <Route path="*" element={<Navigate to={"404"}/>}/>
+                    </Routes>
                 </Container>
 
-                <ErrorSnackbar />
+                <ErrorSnackbar/>
             </div>
         </div>
     );
+}
+
+type TodolistsBlockPropsType = {
+    addTodolist: (title: string) => void
+    todolistsComponents: JSX.Element[]
+}
+
+const TodolistsBlock = (props:TodolistsBlockPropsType) => {
+    return (
+        <>
+            <Grid container style={{padding: '29px 0px'}}>
+                <AddItemForm addItem={props.addTodolist}/>
+            </Grid>
+            <Grid container spacing={4}>
+                {props.todolistsComponents}
+            </Grid>
+        </>
+    )
 }
 
 export default AppWithRedux;
