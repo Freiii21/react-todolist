@@ -29,14 +29,18 @@ export type TasksStateType = {
 }
 
 function AppWithRedux() {
-    useEffect(() => {
-        dispatch(fetchTodoslistsTC())
-    }, [])
-
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
     const dispatch = useDispatch();
+
+    useEffect(() => {
+        if(!isLoggedIn){
+            return;
+        }
+        dispatch(fetchTodoslistsTC())
+    }, [isLoggedIn])
 
     const removeTask = useCallback((taskID: string, todolistID: string) => {
         let action = removeTaskTC(taskID, todolistID)
@@ -134,6 +138,12 @@ type TodolistsBlockPropsType = {
 }
 
 const TodolistsBlock = (props:TodolistsBlockPropsType) => {
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+
+    if (!isLoggedIn) {
+        return <Navigate to={"login"}/>
+    }
+
     return (
         <>
             <Grid container style={{padding: '29px 0px'}}>

@@ -9,8 +9,10 @@ import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
 import {useFormik} from 'formik';
 import {loginTC} from './auth-reducer';
-import {useDispatch} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {LoginParamsType} from '../../api/todolist-api';
+import {AppRootStateType} from '../../state/store';
+import {Navigate} from 'react-router-dom';
 
 // type FormikErrorType = {
 //     email?: string
@@ -20,8 +22,8 @@ import {LoginParamsType} from '../../api/todolist-api';
 
 
 export const Login = () => {
-
     const dispatch = useDispatch();
+    const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
 
     const formik = useFormik({
         initialValues: {
@@ -30,7 +32,7 @@ export const Login = () => {
             rememberMe: false
         },
         validate: (values) => {
-            const errors: Partial<LoginParamsType> = {};
+            const errors: Partial<Omit<LoginParamsType, "capcha">> = {};
             if (!values.email) {
                 errors.email = 'Required';
             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
@@ -49,6 +51,9 @@ export const Login = () => {
         },
     })
 
+    if (isLoggedIn) {
+        return <Navigate to={"/"}/>
+    }
 
     return <Grid container justifyContent={'center'}>
         <Grid item justifyContent={'center'}>
