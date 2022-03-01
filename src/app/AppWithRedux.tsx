@@ -18,10 +18,12 @@ import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from '../state/store';
 import {TaskStatuses, TaskType} from '../api/todolist-api';
 import LinearProgress from '@mui/material/LinearProgress';
-import {RequestStatusType} from './app-reducer';
+import {initializeAppTC, RequestStatusType} from './app-reducer';
 import {ErrorSnackbar} from '../components/ErrorSnackbar';
 import {Login} from '../features/Login/Login';
 import {Navigate, Route, Routes} from 'react-router-dom';
+import CircularProgress from '@mui/material/CircularProgress';
+import {logoutTC} from '../features/Login/auth-reducer';
 
 
 export type TasksStateType = {
@@ -29,7 +31,13 @@ export type TasksStateType = {
 }
 
 function AppWithRedux() {
+    useEffect(() => {
+        dispatch(initializeAppTC())
+    }, [])
+
+
     const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+    const isInitialized = useSelector<AppRootStateType, boolean>(state => state.app.isInitialized)
     const todolists = useSelector<AppRootStateType, Array<TodolistDomainType>>(state => state.todolists)
     const status = useSelector<AppRootStateType, RequestStatusType>(state => state.app.status)
     const tasks = useSelector<AppRootStateType, TasksStateType>(state => state.tasks)
@@ -41,6 +49,8 @@ function AppWithRedux() {
         }
         dispatch(fetchTodoslistsTC())
     }, [isLoggedIn])
+
+
 
     const removeTask = useCallback((taskID: string, todolistID: string) => {
         let action = removeTaskTC(taskID, todolistID)
@@ -74,6 +84,18 @@ function AppWithRedux() {
         let action = addTodolistTC(title);
         dispatch(action);
     }, [dispatch])
+
+    const logoutHandler = () => {
+        dispatch(logoutTC())
+    }
+
+    if (!isInitialized) {
+        return <div
+            style={{position: 'fixed', top: '30%', textAlign: 'center', width: '100%'}}>
+            <CircularProgress/>
+        </div>
+    }
+
 
     const todolistsComponents = todolists.map(tl => {
         return (
@@ -109,7 +131,7 @@ function AppWithRedux() {
                         <Typography variant="h6">
                             Todolists
                         </Typography>
-                        <Button color="inherit" variant={'outlined'}>Login</Button>
+                        {isLoggedIn && <Button color="inherit" variant={'outlined'} onClick={logoutHandler}>Logout</Button>}
                     </Toolbar>
                 </AppBar>
 
