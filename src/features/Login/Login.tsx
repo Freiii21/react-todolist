@@ -13,6 +13,7 @@ import {useDispatch, useSelector} from 'react-redux';
 import {LoginParamsType} from '../../api/todolist-api';
 import {AppRootStateType} from '../../state/store';
 import {Navigate} from 'react-router-dom';
+import s from './Login.module.css';
 
 // type FormikErrorType = {
 //     email?: string
@@ -89,10 +90,11 @@ export const Login = () => {
                         }
 
                         <FormControlLabel label={'Remember me'}
+                                          className={s.rememberMe}
                                           control={<Checkbox {...formik.getFieldProps("rememberMe")}
                                           />}
                         />
-                        <Button type={'submit'} variant={'contained'} color={'primary'}>
+                        <Button type={'submit'} variant={'contained'} color={'primary'} className={s.button}>
                             Login
                         </Button>
                     </FormGroup>

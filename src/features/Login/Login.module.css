@@ -1,0 +1,11 @@
+.rememberMe{
+    margin-left: 0 !important;
+    margin-top: 10px;
+}
+.button {
+    margin: 25px auto 0 auto !important;
+    height: 40px;
+    width: 200px;
+    border: 1px solid black !important;
+    border-radius: 5px !important;
+}

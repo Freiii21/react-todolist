@@ -132,6 +132,7 @@ function AppWithRedux() {
                             Todolists
                         </Typography>
                         {isLoggedIn && <Button color="inherit" variant={'outlined'} onClick={logoutHandler}>Logout</Button>}
+                        {!isLoggedIn && <div style={{width:"94px"}}/>}
                     </Toolbar>
                 </AppBar>
 
