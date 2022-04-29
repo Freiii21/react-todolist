@@ -4,7 +4,7 @@ import {EditableSpan} from './components/EditableSpan';
 import {Button, ButtonGroup, IconButton, List, Typography} from '@material-ui/core';
 import {Delete} from '@material-ui/icons';
 import {Task} from './Task';
-import {FilterValuesType, fetchTodoslistsTC} from './state/todolists-reducer';
+import {FilterValuesType} from './state/todolists-reducer';
 import {TaskStatuses, TaskType} from './api/todolist-api';
 import {fetchTasksTC} from './state/tasks-reducer';
 import {useDispatch} from 'react-redux';
@@ -26,11 +26,12 @@ type TodoListPropsType = {
 }
 
 const TodoList = React.memo((props: TodoListPropsType) => {
+    const dispatch = useDispatch();
+
     useEffect(() => {
         dispatch(fetchTasksTC(props.id))
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
-    const dispatch = useDispatch();
 
 
     let tasksForRender: Array<TaskType> = props.tasks;
@@ -53,10 +54,14 @@ const TodoList = React.memo((props: TodoListPropsType) => {
     })
     const addTask = useCallback((title: string) => {
         props.addTask(title, props.id)
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [props.addTask, props.id]);
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const filterAll = useCallback(() => props.changeFilter('all', props.id), [props.id])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const filterActive = useCallback(() => props.changeFilter('active', props.id), [props.id])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const filterComplete = useCallback(() => props.changeFilter('completed', props.id), [props.id])
 
     const changeTodoListTitle = (title: string) => {

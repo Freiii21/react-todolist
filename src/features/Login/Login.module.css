@@ -3,9 +3,9 @@
     margin-top: 10px;
 }
 .button {
-    margin: 25px auto 0 auto !important;
+    margin-top: 18px !important;
     height: 40px;
-    width: 200px;
-    border: 1px solid black !important;
     border-radius: 5px !important;
+    background-color: #3f51b5 !important;
+    color: white !important;
 }

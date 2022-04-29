@@ -62,7 +62,7 @@ export const Login = () => {
                 <FormLabel>
                     <p>To log in get registered
                         <a href={'https://social-network.samuraijs.com/'}
-                           target={'_blank'}> here
+                           target={'blank'}> here
                         </a>
                     </p>
                     <p>or use common test account credentials:</p>

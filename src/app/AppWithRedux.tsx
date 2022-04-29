@@ -6,14 +6,13 @@ import {AppBar, Button, Container, Grid, IconButton, Paper, Toolbar, Typography}
 import {Menu} from '@material-ui/icons';
 import {
     addTodolistTC,
-    changeTodoListAC,
-    changeTodoListFilterAC,
+    changeTodoListFilterAC, changeTodolistTitleTC,
     fetchTodoslistsTC,
     FilterValuesType,
-    removeTodoListAC, removeTodolistTC,
+    removeTodolistTC,
     TodolistDomainType
 } from '../state/todolists-reducer';
-import {addTaskTC, changeTaskTitleAC, removeTaskTC, updateTaskStatusThunk} from '../state/tasks-reducer';
+import {addTaskTC, removeTaskTC, updateTaskTC} from '../state/tasks-reducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {AppRootStateType} from '../state/store';
 import {TaskStatuses, TaskType} from '../api/todolist-api';
@@ -33,8 +32,8 @@ export type TasksStateType = {
 function AppWithRedux() {
     useEffect(() => {
         dispatch(initializeAppTC())
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
-
 
     const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
     const isInitialized = useSelector<AppRootStateType, boolean>(state => state.app.isInitialized)
@@ -48,9 +47,8 @@ function AppWithRedux() {
             return;
         }
         dispatch(fetchTodoslistsTC())
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isLoggedIn])
-
-
 
     const removeTask = useCallback((taskID: string, todolistID: string) => {
         let action = removeTaskTC(taskID, todolistID)
@@ -61,19 +59,20 @@ function AppWithRedux() {
     }, [dispatch])
     const changeTaskStatus = useCallback((taskID: string, status: TaskStatuses, todolistID: string) => {
         //let action = changeTaskStatusAC(taskID,status,todolistID);
-        dispatch(updateTaskStatusThunk(todolistID, taskID, status));
+        dispatch(updateTaskTC(todolistID, taskID, {status: status}));
     }, [dispatch])
     const changeTaskTitle = useCallback((taskID: string, title: string, todolistID: string) => {
-        let action = changeTaskTitleAC(taskID, title, todolistID);
+        let action = updateTaskTC(todolistID, taskID, {title: title},);
         dispatch(action);
     }, [dispatch])
 
+
     const changeFilter = useCallback((filter: FilterValuesType, todolistID: string) => {
-        let action = changeTodoListFilterAC(todolistID, filter);
+        let action = changeTodoListFilterAC({id:todolistID, filter:filter});
         dispatch(action);
     }, [dispatch])
     const changeTodolistTitle = useCallback((title: string, todolistID: string) => {
-        let action = changeTodoListAC(todolistID, title);
+        let action = changeTodolistTitleTC(todolistID, title);
         dispatch(action);
     }, [dispatch])
     const removeTodolist = useCallback((todolistID: string) => {
@@ -84,6 +83,7 @@ function AppWithRedux() {
         let action = addTodolistTC(title);
         dispatch(action);
     }, [dispatch])
+
 
     const logoutHandler = () => {
         dispatch(logoutTC())
@@ -125,7 +125,7 @@ function AppWithRedux() {
             <div className="App">
                 <AppBar position="static">
                     <Toolbar style={{justifyContent: 'space-between'}}>
-                        <IconButton edge="start" color="inherit" aria-label="menu">
+                        <IconButton edge="start" color="inherit" aria-label="menu" style={{width:"106px"}}>
                             <Menu/>
                         </IconButton>
                         <Typography variant="h6">
