@@ -51,7 +51,7 @@ function AppWithRedux() {
     }, [isLoggedIn])
 
     const removeTask = useCallback((taskID: string, todolistID: string) => {
-        let action = removeTaskTC(taskID, todolistID)
+        let action = removeTaskTC({taskId:taskID, todoId:todolistID})
         dispatch(action)
     }, [dispatch])
     const addTask = useCallback((title: string, todolistID: string) => {

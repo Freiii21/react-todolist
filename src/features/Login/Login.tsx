@@ -7,7 +7,7 @@ import FormGroup from '@mui/material/FormGroup';
 import FormLabel from '@mui/material/FormLabel';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import {useFormik} from 'formik';
+import {FormikHelpers, useFormik} from 'formik';
 import {loginTC} from './auth-reducer';
 import {useDispatch, useSelector} from 'react-redux';
 import {LoginParamsType} from '../../api/todolist-api';
@@ -15,12 +15,11 @@ import {AppRootStateType} from '../../state/store';
 import {Navigate} from 'react-router-dom';
 import s from './Login.module.css';
 
-// type FormikErrorType = {
-//     email?: string
-//     password?: string
-//     rememberMe?: boolean
+// type FormValuesType = {
+//     email: string
+//     password: string
+//     rememberMe: boolean
 // }
-
 
 export const Login = () => {
     const dispatch = useDispatch();
@@ -46,7 +45,7 @@ export const Login = () => {
             }
             return errors;
         },
-        onSubmit: values => {
+        onSubmit: (values) => {
             dispatch(loginTC(values));
             formik.resetForm();
         },
