@@ -1,4 +1,4 @@
-import React from 'react'
+import React, {ChangeEvent, useState} from 'react'
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
 import FormControl from '@mui/material/FormControl';
@@ -15,24 +15,21 @@ import {AppRootStateType} from '../../state/store';
 import {Navigate} from 'react-router-dom';
 import s from './Login.module.css';
 
-// type FormValuesType = {
-//     email: string
-//     password: string
-//     rememberMe: boolean
-// }
-
 export const Login = () => {
     const dispatch = useDispatch();
     const isLoggedIn = useSelector<AppRootStateType, boolean>(state => state.auth.isLoggedIn)
+    const captchaValue = useSelector<AppRootStateType, string>(state => state.auth.captchaUrl)
 
     const formik = useFormik({
         initialValues: {
             email: '',
             password: '',
-            rememberMe: false
+            rememberMe: false,
+            captcha: ''
         },
         validate: (values) => {
-            const errors: Partial<Omit<LoginParamsType, "capcha">> = {};
+            // const errors: Partial<Omit<LoginParamsType, "captcha">> = {};
+            const errors: Partial<LoginParamsType> = {};
             if (!values.email) {
                 errors.email = 'Required';
             } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
@@ -43,11 +40,14 @@ export const Login = () => {
             } else if (values.password.length < 3) {
                 errors.password = 'Password length must be 3 or longer';
             }
+            if (captchaValue && !values.captcha) {
+                errors.captcha = 'Required';
+            }
             return errors;
         },
         onSubmit: (values) => {
             dispatch(loginTC(values));
-            formik.resetForm();
+            // formik.resetForm();
         },
     })
 
@@ -75,6 +75,7 @@ export const Login = () => {
                             margin="normal"
                             {...formik.getFieldProps("email")}
                         />
+
                         {formik.touched.email && formik.errors.email &&
                         <div style={{color: 'red'}}>{formik.errors.email}</div>
                         }
@@ -84,6 +85,7 @@ export const Login = () => {
                                    margin="normal"
                                    {...formik.getFieldProps("password")}
                         />
+
                         {formik.touched.password && formik.errors.password &&
                         <div style={{color: 'red'}}>{formik.errors.password}</div>
                         }
@@ -96,6 +98,22 @@ export const Login = () => {
                         <Button type={'submit'} variant={'contained'} color={'primary'} className={s.button}>
                             Login
                         </Button>
+                        {captchaValue &&
+                            <div className={s.captcha}>
+                                <img src={captchaValue} alt=""/><br/>
+
+                                <TextField
+                                    label="Captcha"
+                                    margin="normal"
+                                    {...formik.getFieldProps("captcha")}
+                                    className={s.captchaInput}
+                                />
+
+                                {formik.errors.captcha &&
+                                <div style={{color: 'red'}}>{formik.errors.captcha}</div>
+                                }
+                            </div>
+                        }
                     </FormGroup>
                 </form>
             </FormControl>

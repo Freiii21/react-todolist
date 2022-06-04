@@ -48,6 +48,13 @@ export const authAPI = {
 
 }
 
+export const securityAPI = {
+    getCaptchaUrl () {
+        // return instance.get<{url:string}>('security/get-captcha-url')
+        return instance.get('security/get-captcha-url')
+    },
+}
+
 type ResponseMeType = {
     id: number
     email: string
@@ -58,7 +65,7 @@ export type LoginParamsType = {
     email: string
     password: string
     rememberMe?: boolean
-    capcha?: string
+    captcha?: string
 }
 
 export type TodolistType = {

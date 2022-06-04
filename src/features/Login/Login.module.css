@@ -9,3 +9,11 @@
     background-color: #3f51b5 !important;
     color: white !important;
 }
+.captcha{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.captchaInput {
+    margin-top: -15px;
+}
